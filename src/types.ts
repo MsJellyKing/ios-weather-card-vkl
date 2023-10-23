@@ -49,6 +49,7 @@ export interface MergedClockWeatherCardConfig extends LovelaceCardConfig {
   hide_date: boolean
   use_browser_time: boolean
   time_zone?: string
+  show_units?: boolean
 }
 
 export const enum WeatherEntityFeature {
@@ -68,7 +69,7 @@ export interface Weather extends HassEntity {
   }
 }
 
-export type TemperatureUnit = '°C' | '°F'
+export type TemperatureUnit = '°C' | '°F' | '°'
 
 export interface WeatherForecast {
   datetime: string

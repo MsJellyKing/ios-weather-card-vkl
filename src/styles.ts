@@ -3,7 +3,7 @@ import { css } from 'lit'
 export default css`
 
   ha-card {
-    --bar-height: 1.5rem;
+    --bar-height: 0.4rem;
     height: 100%;
   }
 
@@ -61,21 +61,39 @@ export default css`
 
   clock-weather-card-forecast-row {
     display: grid;
-    grid-template-columns: var(--col-one-size) 2rem 2.1rem auto 2.1rem;
+    grid-template-columns: var(--col-one-size) 7rem 2.1rem auto 2.1rem;
     align-items: center;
     grid-gap: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+  }
+
+  clock-weather-card-forecast-row:last-child {
+    border-bottom: none;
   }
 
   forecast-text {
     text-align: var(--text-align);
     white-space: nowrap;
     text-overflow: clip;
+    font-size: 1.1rem;
+  }
+
+  forecast-probability {
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: clip;
+    font-size: 1rem;
+    color: rgb(120, 162, 204);
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
   }
 
   forecast-icon {
-    display: flex;
+    display: grid;
     align-items: center;
     justify-content: center;
+    padding-left: 2rem;
+    padding-right: 2rem; 
   }
 
   forecast-temperature-bar {
