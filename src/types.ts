@@ -44,6 +44,7 @@ export interface MergedClockWeatherCardConfig extends LovelaceCardConfig {
   date_pattern: string
   hide_today_section: boolean
   hide_forecast_section: boolean
+  hide_hourly_forecast_section: boolean
   hourly_forecast: boolean
   hide_clock: boolean
   hide_date: boolean
@@ -87,6 +88,8 @@ export interface MergedWeatherForecast {
   precipitation: number
   precipitation_probability: number
   templow: number
+  display_text: string
+  temp_display: string
 }
 
 export class Rgb {

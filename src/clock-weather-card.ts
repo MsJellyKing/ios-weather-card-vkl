@@ -63,7 +63,9 @@ export class ClockWeatherCard extends LitElement {
   @state() private config!: MergedClockWeatherCardConfig
   @state() private currentDate!: DateTime
   @state() private forecastSubscriber?: Promise<() => void>
+  @state() private hourlyForecastSubscriber?: Promise<() => void>
   @state() private forecasts?: WeatherForecast[]
+  @state() private hourlyForecasts?: WeatherForecast[]
 
   constructor () {
     super()
@@ -144,6 +146,7 @@ export class ClockWeatherCard extends LitElement {
   protected render (): TemplateResult {
     const showToday = !this.config.hide_today_section
     const showForecast = !this.config.hide_forecast_section
+    const showHourlyForecast = !this.config.hide_hourly_forecast_section
     return html`
       <ha-card
         @action=${this.handleAction}
@@ -167,6 +170,14 @@ export class ClockWeatherCard extends LitElement {
               ${safeRender(() => this.renderToday())}
             </clock-weather-card-today>`
 : ''}
+
+          ${showHourlyForecast
+  ? html`
+              <clock-weather-card-hourly-forecast>
+                ${safeRender(() => this.renderHourlyForecast())}
+              </clock-weather-card-hourly-forecast>`
+  : ''}
+
           ${showForecast
 ? html`
             <clock-weather-card-forecast>
@@ -219,6 +230,11 @@ export class ClockWeatherCard extends LitElement {
       </clock-weather-card-today-right>`
   }
 
+  private renderHourlyForecast (): TemplateResult[] {
+    return this.mergeHourlyForecasts()
+      .map((forecast) => safeRender(() => this.renderHourlyForecastItem(forecast)))
+  }
+
   private renderForecast (): TemplateResult[] {
     const weather = this.getWeather()
     const currentTemp = roundIfNotNull(this.getCurrentTemperature())
@@ -244,17 +260,33 @@ export class ClockWeatherCard extends LitElement {
       .map(d => hourly ? this.time(d) : this.localize(`day.${d.weekday}`))
     const maxColOneChars = displayTexts.length ? max(displayTexts.map(t => t.length)) : 0
 
+    displayTexts[0] = 'Today'
+
     return forecasts.map((forecast, i) => safeRender(() => this.renderForecastItem(forecast, gradientRange, minTemp, maxTemp, currentTemp, hourly, displayTexts[i], maxColOneChars)))
+  }
+
+  private renderHourlyForecastItem (forecast: MergedWeatherForecast): TemplateResult {
+    const weatherState = forecast.condition === 'pouring' ? 'raindrops' : forecast.condition === 'rainy' ? 'raindrop' : forecast.condition
+    const isNight = ((forecast.datetime > this.getSunset()) && (forecast.datetime < this.getSunrise()))
+    const weatherIcon = this.toIcon(weatherState, 'fill', isNight, 'static')
+
+    return html`
+      <clock-weather-card-hourly-forecast-item>
+        ${this.renderText(forecast.display_text, 'center')}
+        ${this.renderIcon(weatherIcon, forecast.precipitation_probability)}
+        ${this.renderText(forecast.temp_display, 'center')}
+      </clock-weather-card-hourly-forecast-item>
+    `
   }
 
   private renderForecastItem (forecast: MergedWeatherForecast, gradientRange: Rgb[], minTemp: number, maxTemp: number, currentTemp: number | null, hourly: boolean, displayText: string, maxColOneChars: number): TemplateResult {
     const weatherState = forecast.condition === 'pouring' ? 'raindrops' : forecast.condition === 'rainy' ? 'raindrop' : forecast.condition
-    const weatherIcon = this.toIcon(weatherState, 'fill', true, 'static')
+    const weatherIcon = this.toIcon(weatherState, 'fill', false, 'static')
     // const tempUnit = this.getWeather().attributes.temperature_unit
     const isNow = hourly ? DateTime.now().hour === forecast.datetime.hour : DateTime.now().day === forecast.datetime.day
     const minTempDay = Math.round(isNow && currentTemp !== null ? Math.min(currentTemp, forecast.templow) : forecast.templow)
     const maxTempDay = Math.round(isNow && currentTemp !== null ? Math.max(currentTemp, forecast.temperature) : forecast.temperature)
-    const probability = forecast.precipitation_probability + '%'
+    const probability = forecast.precipitation_probability
 
     return html`
       <clock-weather-card-forecast-row style="--col-one-size: ${(maxColOneChars * 0.75)}rem;">
@@ -275,12 +307,19 @@ export class ClockWeatherCard extends LitElement {
     `
   }
 
-  private renderIcon (src: string, probability: string): TemplateResult {
+  private renderIcon (src: string, probability: number): TemplateResult {
+    const showProbability = (probability > 5)
+
     return html`
-      <forecast-icon>
+      <div class="forecast-image-icon" style="display: grid; align-items: center; justify-content: center;">
         <img class="grow-img" src=${src} />
-        <forecast-probability>${probability}</forecast-probability>
-      </forecast-icon>
+        ${showProbability
+          ? html`
+            <forecast-probability>${probability.toString() + '%'}</forecast-probability>
+          `
+          : ''
+        }
+      </div>
     `
   }
 
@@ -394,6 +433,7 @@ export class ClockWeatherCard extends LitElement {
       time_format: config.time_format?.toString() as '12' | '24' | undefined,
       time_pattern: config.time_pattern ?? undefined,
       hide_forecast_section: config.hide_forecast_section ?? false,
+      hide_hourly_forecast_section: config.hide_hourly_forecast_section ?? false,
       hide_today_section: config.hide_today_section ?? false,
       hide_clock: config.hide_clock ?? false,
       hide_date: config.hide_date ?? false,
@@ -403,14 +443,21 @@ export class ClockWeatherCard extends LitElement {
     }
   }
 
-  private toIcon (weatherState: string, type: 'fill' | 'line', forceDay: boolean, kind: 'static' | 'animated'): string {
-    const daytime = forceDay ? 'day' : this.getSun()?.state === 'below_horizon' ? 'night' : 'day'
+  private toIcon (weatherState: string, type: 'fill' | 'line', isNight: boolean, kind: 'static' | 'animated'): string {
+    const daytime = isNight ? 'night' : 'day'
     const iconMap = kind === 'animated' ? svg : png
     const icon = iconMap[type][weatherState]
     return icon?.[daytime] || icon
   }
 
   private getWeather (): Weather {
+  //   const weather = await this.hass.callService('weather', 'get_forecast', {
+  //     domain: 'weather',
+  //     service: 'get_forecast',
+  //     serviceData: { type: 'hourly' },
+  //     target: { device_id: '9463b75390b099897395bbcf53bebdd1' }
+  // }) as Weather | undefined
+
     const weather = this.hass.states[this.config.entity] as Weather | undefined
     if (!weather) throw new Error(`Weather entity "${this.config.entity}" could not be found.`)
     return weather
@@ -432,6 +479,16 @@ export class ClockWeatherCard extends LitElement {
 
   private getSun (): HassEntityBase | undefined {
     return this.hass.states[this.config.sun_entity]
+  }
+
+  private getSunset (): DateTime {
+    const dusk = this.hass.states['sensor.sun_next_setting'].state
+    return DateTime.fromISO(dusk)
+  }
+
+  private getSunrise (): DateTime {
+    const time = this.hass.states['sensor.sun_next_rising'].state
+    return DateTime.fromISO(time)
   }
 
   private getLocale (): string {
@@ -513,6 +570,59 @@ export class ClockWeatherCard extends LitElement {
     return localize(key, this.getLocale())
   }
 
+  private mergeHourlyForecasts (): MergedWeatherForecast[] {
+    const forecasts = this.getWeather().attributes.forecast ?? this.hourlyForecasts ?? []
+    const agg = forecasts.reduce<Record<number, WeatherForecast[]>>((forecasts, forecast) => {
+      const d = new Date(forecast.datetime)
+      const unit = `${d.getMonth()}-${d.getDate()}-${+d.getHours()}`
+      forecasts[unit] = forecasts[unit] || []
+      forecasts[unit].push(forecast)
+      return forecasts
+    }, {})
+
+    const merged = Object.values(agg)
+      .reduce((agg: MergedWeatherForecast[], forecasts) => {
+        if (forecasts.length === 0) return agg
+        const avg = this.calculateAverageForecast(forecasts)
+        agg.push(avg)
+        return agg
+      }, [])
+
+    merged.push(
+      {
+        temperature: 0,
+        templow: 0,
+        datetime: this.getSunset(),
+        condition: 'sunset',
+        precipitation_probability: 0,
+        precipitation: 0,
+        display_text: this.getSunset().toFormat('h:mma'),
+        temp_display: 'Sunset'
+      }
+    )
+
+    merged.push(
+      {
+        temperature: 0,
+        templow: 0,
+        datetime: this.getSunrise(),
+        condition: 'sunrise',
+        precipitation_probability: 0,
+        precipitation: 0,
+        display_text: this.getSunrise().toFormat('h:mma'),
+        temp_display: 'Sunrise'
+      }
+    )
+
+    const sorted = merged
+      .sort((a, b) => a.datetime.toMillis() - b.datetime.toMillis())
+      .slice(0, 24)
+
+    sorted[0].display_text = 'Now'
+
+    return sorted
+  }
+
   private mergeForecasts (maxRowsCount: number, hourly: boolean): MergedWeatherForecast[] {
     const forecasts = this.getWeather().attributes.forecast ?? this.forecasts ?? []
     const agg = forecasts.reduce<Record<number, WeatherForecast[]>>((forecasts, forecast) => {
@@ -562,13 +672,17 @@ export class ClockWeatherCard extends LitElement {
     const conditions = forecasts.map((f) => f.condition)
     const condition = extractMostOccuring(conditions)
 
+    const dateTime = DateTime.fromISO(forecasts[0].datetime)
+
     return {
       temperature: maxTemp,
       templow: minTemp,
-      datetime: DateTime.fromISO(forecasts[0].datetime),
+      datetime: dateTime,
       condition,
       precipitation_probability: precipitationProbability,
-      precipitation
+      precipitation,
+      display_text: this.toZonedDate(dateTime).toFormat('ha'),
+      temp_display: maxTemp + '°'
     }
   }
 
@@ -594,6 +708,15 @@ export class ClockWeatherCard extends LitElement {
       forecast_type: hourly ? 'hourly' : 'daily',
       entity_id: this.config.entity
     })
+
+    const hourlyCallback = (event: WeatherForecastEvent): void => {
+      this.hourlyForecasts = event.forecast
+    }
+    this.hourlyForecastSubscriber = this.hass.connection.subscribeMessage<WeatherForecastEvent>(hourlyCallback, {
+      type: 'weather/subscribe_forecast',
+      forecast_type: 'hourly',
+      entity_id: this.config.entity
+    })
   }
 
   private unsubscribeForecastEvents (): void {
@@ -601,6 +724,12 @@ export class ClockWeatherCard extends LitElement {
       this.forecastSubscriber
         .then((unsub) => { unsub() })
         .catch(e => { console.error('clock-weather-card - Error when unsubscribing weather forecast: ' + e) })
+    }
+
+    if (this.hourlyForecastSubscriber) {
+      this.hourlyForecastSubscriber
+        .then((unsub) => { unsub() })
+        .catch(e => { console.error('clock-weather-card - Error when unsubscribing weather hourly forecast: ' + e) })
     }
   }
 

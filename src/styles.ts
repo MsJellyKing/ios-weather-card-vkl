@@ -19,8 +19,8 @@ export default css`
   }
 
   .grow-img {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 2.7rem;
+    max-height: 2.7rem;
   }
 
   clock-weather-card-today-right {
@@ -59,6 +59,25 @@ export default css`
     display: block;
   }
 
+  clock-weather-card-hourly-forecast {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+  }
+
+  clock-weather-card-hourly-forecast-item {
+    display: grid;
+    flex-direction: column;
+    /* grid-template-columns: var(--col-one-size) 7rem 2.1rem auto 2.1rem; */
+    align-items: center;
+    grid-gap: 0;
+    margin-right: 1rem;
+
+    forecast-text {
+      margin: 0;
+    }
+  }
+
   clock-weather-card-forecast-row {
     display: grid;
     grid-template-columns: var(--col-one-size) 7rem 2.1rem auto 2.1rem;
@@ -67,8 +86,13 @@ export default css`
     border-bottom: 1px solid rgba(255,255,255,.1);
   }
 
+  clock-weather-card-forecast-row:first-child {
+    margin-top: -1rem;
+  }
+
   clock-weather-card-forecast-row:last-child {
     border-bottom: none;
+    margin-bottom: -1rem;
   }
 
   forecast-text {
@@ -76,6 +100,8 @@ export default css`
     white-space: nowrap;
     text-overflow: clip;
     font-size: 1.1rem;
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
   }
 
   forecast-probability {
@@ -116,9 +142,11 @@ export default css`
     --border-width: 2px;
     background-color: var(--primary-text-color);
     border-radius: 50%;
-    width: var(--bar-height);
+    width: calc(var(--bar-height)*2);
+    height: calc(var(--bar-height)*2) !important;
     box-shadow: inset 0 0 0 var(--border-width) var(--text-light-primary-color);
-    margin-left: calc(var(--move-right) * -1 * var(--bar-height));
+    margin-left: calc(var(--move-right) * -1.5 * var(--bar-height));
+    margin-top: calc(var(--move-right) * -0.5 * var(--bar-height));
   }
 
   forecast-temperature-bar-range {

@@ -40,6 +40,10 @@ import svgLineRaindrops from './icons/line/svg/raindrops.svg'
 import svgFillRaindrops from './icons/fill/svg/raindrops.svg'
 import svgLineRaindrop from './icons/line/svg/raindrop.svg'
 import svgFillRaindrop from './icons/fill/svg/raindrop.svg'
+import svgLineSunset from './icons/line/svg/sunset.svg'
+import svgFillSunset from './icons/fill/svg/sunset.svg'
+import svgLineSunrise from './icons/line/svg/sunrise.svg'
+import svgFillSunrise from './icons/fill/svg/sunrise.svg'
 
 import pngFillPartlyCloudyNightRain from './icons/fill/png/128/partly-cloudy-night-rain.png'
 import pngLinePartlyCloudyNightRain from './icons/line/png/128/partly-cloudy-night-rain.png'
@@ -83,6 +87,10 @@ import pngFillRaindrops from './icons/fill/png/128/raindrops.png'
 import pngLineRaindrops from './icons/line/png/128/raindrops.png'
 import pngFillRaindrop from './icons/fill/png/128/raindrop.png'
 import pngLineRaindrop from './icons/line/png/128/raindrop.png'
+import pngLineSunset from './icons/line/png/128/sunset.png'
+import pngFillSunset from './icons/fill/png/128/sunset.png'
+import pngLineSunrise from './icons/line/png/128/sunrise.png'
+import pngFillSunrise from './icons/fill/png/128/sunrise.png'
 
 export const svg = {
   line: {
@@ -123,7 +131,9 @@ export const svg = {
     },
     windy: svgLineWindsock,
     'windy-exceptional': svgLineWindsock,
-    exceptional: svgLineHurricane
+    exceptional: svgLineHurricane,
+    sunset: svgLineSunset,
+    sunrise: svgLineSunrise
   },
   fill: {
     rainy: {
@@ -163,7 +173,9 @@ export const svg = {
     },
     windy: svgFillWindsock,
     'windy-exceptional': svgFillWindsock,
-    exceptional: svgFillHurricane
+    exceptional: svgFillHurricane,
+    sunset: svgFillSunset,
+    sunrise: svgFillSunrise
   }
 }
 
@@ -206,7 +218,9 @@ export const png = {
     },
     windy: pngLineWindsock,
     'windy-exceptional': pngLineWindsock,
-    exceptional: pngLineHurricane
+    exceptional: pngLineHurricane,
+    sunset: pngLineSunset,
+    sunrise: pngLineSunrise
   },
   fill: {
     rainy: {
@@ -246,6 +260,8 @@ export const png = {
     },
     windy: pngFillWindsock,
     'windy-exceptional': pngFillWindsock,
-    exceptional: pngFillHurricane
+    exceptional: pngFillHurricane,
+    sunset: pngFillSunset,
+    sunrise: pngFillSunrise
   }
 }
