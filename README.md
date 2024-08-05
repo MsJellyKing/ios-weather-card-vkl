@@ -1,50 +1,15 @@
-# Clock Weather Card
+# iOS Weather Card
 
-[![HACS](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
-[![Total downloads](https://img.shields.io/github/downloads/pkissling/clock-weather-card/total)](https://github.com/pkissling/clock-weather-card/releases)
-[![Downloads of latest version (latest by SemVer)](https://img.shields.io/github/downloads/pkissling/clock-weather-card/latest/total?sort=semver)](https://github.com/pkissling/clock-weather-card/releases/latest)
-[![Current version](https://img.shields.io/github/v/release/pkissling/clock-weather-card)](https://github.com/pkissling/clock-weather-card/releases/latest)
+Credits go to [basmilius](https://github.com/basmilius) for the awesome [weather icons](https://github.com/basmilius/weather-icons) and of course [pkissling](https://github.com/pkissling) for the orignal code.
 
-A [Home Assistant Dashboard Card](https://www.home-assistant.io/dashboards/) available through the [Home Assistant Community Store](https://hacs.xyz)
-showing the current date, time and a weather forecast.
-
-![Clock Weather Card](.github/assets/card.png)
+![iOS Weather Card](.github/assets/card2.png)
 [^1]
-
-Credits go to [basmilius](https://github.com/basmilius) for the awesome [weather icons](https://github.com/basmilius/weather-icons).
-
-## Migrating from v1 to v2
-
-* Configuration property `forecast_days` was renamed to `forecast_rows` to indicate that this attribute does not only work for daily, but also for hourly forecasts.
-* `date-fns` has been replaced by `luxon` for date/time formatting. If you configure `date_pattern`, make sure to migrate your pattern to comply with [luxon](https://moment.github.io/luxon/#/formatting?id=table-of-tokens). Additionally, the weekday is now [_not_ hardcoded](https://github.com/pkissling/clock-weather-card/issues/89) anymore.
-* Configuration property `use_browser_time` is now by default `false`, so by default the card will show the time of the current HA time zone.
-
-## FAQ
-
-* [Why don't I see the current day in my weather forecast?](#why-dont-i-see-the-current-day-in-my-weather-forecast)
-* [What does the card actually display?](#what-does-the-card-actually-display)
-
-### Why don't I see the current day in my weather forecast?
-
-Your weather provider may not provide today's weather as part of their weather forecast. You may consider switching to a different weather provider.
-[OpenWeatherMap](https://www.home-assistant.io/integrations/openweathermap/) is one of the weather integrations providing today's weather.
-
-### What does the card actually display?
-
-The bars represent the temperature range for a given day.
-In the above image, the 9° on Thursday represents the low across all of the forecast days and the 21° represents the highs (i.e. all bars are from 9° to 21°).
-The colored portion of the bar represents the range of temperatures that are forecast for that day (so 12° to 21° on Monday).
-The circle represents the current temperature (16° or roughly midway between 12° and 21° in your case).
-
-*Thanks to @deprecatedcoder for this text from [#143](https://github.com/pkissling/clock-weather-card/issues/143)*
-
-The basic idea of the forecast bars is to be able to understand the weather trend for the upcoming days in a single glance.
 
 ## Installation
 
 ### Manual Installation
 
-1. Download the [clock-weather-card](https://www.github.com/pkissling/clock-weather-card/releases/latest/download/clock-weather-card.js).
+1. Download the [clock-weather-card](https://www.github.com/FutureGUIs/ios-weather-card/releases/latest/download/clock-weather-card.js).
 2. Place the file in your Home Assistant's `config/www` folder.
 3. Add the configuration to your `ui-lovelace.yaml`.
 
