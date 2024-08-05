@@ -69,12 +69,16 @@ export default css`
     display: grid;
     flex-direction: column;
     /* grid-template-columns: var(--col-one-size) 7rem 2.1rem auto 2.1rem; */
-    align-items: center;
+    align-content: stretch;
     grid-gap: 0;
     margin-right: 1rem;
 
     forecast-text {
       margin: 0;
+
+      .time-period {
+        font-size: 0.9rem;
+      }
     }
   }
 

@@ -90,6 +90,7 @@ export interface MergedWeatherForecast {
   templow: number
   display_text: string
   temp_display: string
+  time_period: string
 }
 
 export class Rgb {

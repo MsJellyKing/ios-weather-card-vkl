@@ -268,20 +268,20 @@ export class ClockWeatherCard extends LitElement {
   private renderHourlyForecastItem (forecast: MergedWeatherForecast): TemplateResult {
     const weatherState = forecast.condition === 'pouring' ? 'raindrops' : forecast.condition === 'rainy' ? 'raindrop' : forecast.condition
     const isNight = ((forecast.datetime > this.getSunset()) && (forecast.datetime < this.getSunrise()))
-    const weatherIcon = this.toIcon(weatherState, 'fill', isNight, 'static')
+    const weatherIcon = this.toIcon(weatherState, 'fill', isNight, this.getIconAnimationKind())
 
     return html`
       <clock-weather-card-hourly-forecast-item>
-        ${this.renderText(forecast.display_text, 'center')}
+        ${this.renderTime(forecast.display_text, forecast.time_period)}
         ${this.renderIcon(weatherIcon, forecast.precipitation_probability)}
-        ${this.renderText(forecast.temp_display, 'center')}
+        ${this.renderText(forecast.temp_display, 'center', 'end')}
       </clock-weather-card-hourly-forecast-item>
     `
   }
 
   private renderForecastItem (forecast: MergedWeatherForecast, gradientRange: Rgb[], minTemp: number, maxTemp: number, currentTemp: number | null, hourly: boolean, displayText: string, maxColOneChars: number): TemplateResult {
     const weatherState = forecast.condition === 'pouring' ? 'raindrops' : forecast.condition === 'rainy' ? 'raindrop' : forecast.condition
-    const weatherIcon = this.toIcon(weatherState, 'fill', false, 'static')
+    const weatherIcon = this.toIcon(weatherState, 'fill', false, this.getIconAnimationKind())
     // const tempUnit = this.getWeather().attributes.temperature_unit
     const isNow = hourly ? DateTime.now().hour === forecast.datetime.hour : DateTime.now().day === forecast.datetime.day
     const minTempDay = Math.round(isNow && currentTemp !== null ? Math.min(currentTemp, forecast.templow) : forecast.templow)
@@ -299,9 +299,19 @@ export class ClockWeatherCard extends LitElement {
     `
   }
 
-  private renderText (text: string, textAlign: 'left' | 'center' | 'right' = 'left'): TemplateResult {
+  private renderTime (text: string, period: string): TemplateResult {
     return html`
-      <forecast-text style="--text-align: ${textAlign};">
+      <forecast-text style="--text-align: center">
+        ${text}<span class="time-period">${period}</span>
+      </forecast-text>
+    `
+  }
+
+  private renderText (text: string, textAlign: 'left' | 'center' | 'right' = 'left', contentAlign?: string | null): TemplateResult {
+    const content = contentAlign ? ` align-content: ${contentAlign};` : ''
+
+    return html`
+      <forecast-text style="--text-align: ${textAlign};${content}">
         ${text}
       </forecast-text>
     `
@@ -588,29 +598,34 @@ export class ClockWeatherCard extends LitElement {
         return agg
       }, [])
 
+    const sunset = this.getSunset()
     merged.push(
       {
         temperature: 0,
         templow: 0,
-        datetime: this.getSunset(),
+        datetime: sunset,
         condition: 'sunset',
         precipitation_probability: 0,
         precipitation: 0,
-        display_text: this.getSunset().toFormat('h:mma'),
-        temp_display: 'Sunset'
+        display_text: sunset.toFormat('h:mm'),
+        temp_display: 'Sunset',
+        time_period: sunset.toFormat('a')
       }
     )
+
+    const sunrise = this.getSunrise()
 
     merged.push(
       {
         temperature: 0,
         templow: 0,
-        datetime: this.getSunrise(),
+        datetime: sunrise,
         condition: 'sunrise',
         precipitation_probability: 0,
         precipitation: 0,
-        display_text: this.getSunrise().toFormat('h:mma'),
-        temp_display: 'Sunrise'
+        display_text: sunrise.toFormat('h:mm'),
+        temp_display: 'Sunrise',
+        time_period: sunrise.toFormat('a')
       }
     )
 
@@ -618,7 +633,8 @@ export class ClockWeatherCard extends LitElement {
       .sort((a, b) => a.datetime.toMillis() - b.datetime.toMillis())
       .slice(0, 24)
 
-    sorted[0].display_text = 'Now'
+    // will put back now later...
+    // sorted[0].display_text = 'Now'
 
     return sorted
   }
@@ -673,6 +689,7 @@ export class ClockWeatherCard extends LitElement {
     const condition = extractMostOccuring(conditions)
 
     const dateTime = DateTime.fromISO(forecasts[0].datetime)
+    const zonedDate = this.toZonedDate(dateTime)
 
     return {
       temperature: maxTemp,
@@ -681,8 +698,9 @@ export class ClockWeatherCard extends LitElement {
       condition,
       precipitation_probability: precipitationProbability,
       precipitation,
-      display_text: this.toZonedDate(dateTime).toFormat('ha'),
-      temp_display: maxTemp + '°'
+      display_text: zonedDate.toFormat('h'),
+      temp_display: maxTemp + '°',
+      time_period: zonedDate.toFormat('a')
     }
   }
 
