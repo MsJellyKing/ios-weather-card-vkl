@@ -76,6 +76,7 @@ hide_date: false
 hourly_forecast: false
 use_browser_time: false
 time_zone: null
+hide_hourly_forecast_section: false
 ```
 
 ### Options
@@ -101,6 +102,8 @@ time_zone: null
 | hourly_forecast       | boolean          | **Optional** | Displays an hourly forecast instead of daily                                                                                                                                                                                      | `false`   |
 | use_browser_time      | boolean          | **Optional** | Uses the time from your browser to indicate the current time. If not provided, uses the [time_zone](https://www.home-assistant.io/blog/2015/05/09/utc-time-zone-awareness/#setting-up-your-time-zone) configured in HA            | `false`   |
 | time_zone             | string           | **Optional** | Uses the given [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to indicate the current date and time. If not provided, uses the time zone configured in HA                                              | `null`    |
+| hide_hourly_forecast_section      | boolean          | **Optional** | Set to True to hide the hourly section            | `false`   |
+
 
 ## Footnotes
 
