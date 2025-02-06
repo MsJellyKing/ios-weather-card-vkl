@@ -11,8 +11,8 @@ import {
 } from 'custom-card-helpers' // This is a community maintained npm module with common helper functions/types. https://github.com/custom-cards/custom-card-helpers
 
 import {
-  type ClockWeatherCardConfig,
-  type MergedClockWeatherCardConfig,
+  type klWeatherCardConfig,
+  type MergedklWeatherCardConfig,
   type MergedWeatherForecast,
   Rgb,
   type TemperatureSensor,
@@ -33,7 +33,7 @@ import { safeRender } from './helpers'
 import { DateTime } from 'luxon'
 
 console.info(
-`%c  CLOCK-WEATHER-CARD \n%c Version: ${version}`,
+`%c  kl-WEATHER-CARD \n%c Version: ${version}`,
 'color: orange; font-weight: bold; background: black',
 'color: white; font-weight: bold; background: dimgray'
 );
@@ -42,8 +42,8 @@ console.info(
 // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 (window as any).customCards = (window as any).customCards || [];
 (window as any).customCards.push({
-  type: 'clock-weather-card',
-  name: 'Clock Weather Card',
+  type: 'kl-weather-card',
+  name: 'kl Weather Card',
   description: 'Shows the current date/time in combination with the current weather and an iOS insipired weather forecast.'
 })
 
@@ -55,12 +55,12 @@ const gradientMap: Map<number, Rgb> = new Map()
   .set(30, new Rgb(255, 150, 79)) // orange
   .set(40, new Rgb(255, 192, 159)) // red
 
-@customElement('clock-weather-card')
-export class ClockWeatherCard extends LitElement {
+@customElement('kl-weather-card')
+export class klWeatherCard extends LitElement {
   // https://lit.dev/docs/components/properties/
   @property({ attribute: false }) public hass!: HomeAssistant
 
-  @state() private config!: MergedClockWeatherCardConfig
+  @state() private config!: MergedklWeatherCardConfig
   @state() private currentDate!: DateTime
   @state() private forecastSubscriber?: Promise<() => void>
   @state() private hourlyForecastSubscriber?: Promise<() => void>
@@ -89,7 +89,7 @@ export class ClockWeatherCard extends LitElement {
   }
 
   // https://lit.dev/docs/components/properties/#accessors-custom
-  public setConfig (config?: ClockWeatherCardConfig): void {
+  public setConfig (config?: klWeatherCardConfig): void {
     if (!config) {
       throw new Error('Invalid configuration.')
     }
@@ -155,7 +155,7 @@ export class ClockWeatherCard extends LitElement {
           hasDoubleClick: hasAction(this.config.double_tap_action)
         })}
         tabindex="0"
-        .label=${`Clock Weather Card: ${this.config.entity || 'No Entity Defined'}`}
+        .label=${`kl Weather Card: ${this.config.entity || 'No Entity Defined'}`}
       >
         ${this.config.title
 ? html`
@@ -166,23 +166,23 @@ export class ClockWeatherCard extends LitElement {
         <div class="card-content">
           ${showToday
 ? html`
-            <clock-weather-card-today>
+            <kl-weather-card-today>
               ${safeRender(() => this.renderToday())}
-            </clock-weather-card-today>`
+            </kl-weather-card-today>`
 : ''}
 
           ${showHourlyForecast
   ? html`
-              <clock-weather-card-hourly-forecast>
+              <kl-weather-card-hourly-forecast>
                 ${safeRender(() => this.renderHourlyForecast())}
-              </clock-weather-card-hourly-forecast>`
+              </kl-weather-card-hourly-forecast>`
   : ''}
 
           ${showForecast
 ? html`
-            <clock-weather-card-forecast>
+            <kl-weather-card-forecast>
               ${safeRender(() => this.renderForecast())}
-            </clock-weather-card-forecast>`
+            </kl-weather-card-forecast>`
 : ''}
         </div>
       </ha-card>
@@ -212,22 +212,22 @@ export class ClockWeatherCard extends LitElement {
     const localizedTemp = temp !== null ? this.toConfiguredTempWithUnit(tempUnit, temp) : null
 
     return html`
-      <clock-weather-card-today-left>
+      <kl-weather-card-today-left>
         <img class="grow-img" src=${icon} />
-      </clock-weather-card-today-left>
-      <clock-weather-card-today-right>
-        <clock-weather-card-today-right-wrap>
-          <clock-weather-card-today-right-wrap-top>
-            ${this.config.hide_clock ? weatherString : localizedTemp ? `${weatherString}, ${localizedTemp}` : weatherString}
-          </clock-weather-card-today-right-wrap-top>
-          <clock-weather-card-today-right-wrap-center>
-            ${this.config.hide_clock ? localizedTemp ?? 'n/a' : this.time()}
-          </clock-weather-card-today-right-wrap-center>
-          <clock-weather-card-today-right-wrap-bottom>
+      </kl-weather-card-today-left>
+      <kl-weather-card-today-right>
+        <kl-weather-card-today-right-wrap>
+          <kl-weather-card-today-right-wrap-top>
+            ${this.config.hide_kl ? weatherString : localizedTemp ? `${weatherString}, ${localizedTemp}` : weatherString}
+          </kl-weather-card-today-right-wrap-top>
+          <kl-weather-card-today-right-wrap-center>
+            ${this.config.hide_kl ? localizedTemp ?? 'n/a' : this.time()}
+          </kl-weather-card-today-right-wrap-center>
+          <kl-weather-card-today-right-wrap-bottom>
             ${this.config.hide_date ? '' : this.date()}
-          </clock-weather-card-today-right-wrap-bottom>
-        </clock-weather-card-today-right-wrap>
-      </clock-weather-card-today-right>`
+          </kl-weather-card-today-right-wrap-bottom>
+        </kl-weather-card-today-right-wrap>
+      </kl-weather-card-today-right>`
   }
 
   private renderHourlyForecast (): TemplateResult[] {
@@ -271,11 +271,11 @@ export class ClockWeatherCard extends LitElement {
     const weatherIcon = this.toIcon(weatherState, 'fill', isNight, this.getIconAnimationKind())
 
     return html`
-      <clock-weather-card-hourly-forecast-item>
+      <kl-weather-card-hourly-forecast-item>
         ${this.renderTime(forecast.display_text, forecast.time_period)}
         ${this.renderIcon(weatherIcon, forecast.precipitation_probability)}
         ${this.renderText(forecast.temp_display, 'center', 'end')}
-      </clock-weather-card-hourly-forecast-item>
+      </kl-weather-card-hourly-forecast-item>
     `
   }
 
@@ -289,13 +289,13 @@ export class ClockWeatherCard extends LitElement {
     const probability = forecast.precipitation_probability
 
     return html`
-      <clock-weather-card-forecast-row style="--col-one-size: ${(maxColOneChars * 0.75)}rem;">
+      <kl-weather-card-forecast-row style="--col-one-size: ${(maxColOneChars * 0.75)}rem;">
         ${this.renderText(displayText)}
         ${this.renderIcon(weatherIcon, probability)}
         ${this.renderText(minTempDay.toString() + '°', 'center')}
         ${this.renderForecastTemperatureBar(gradientRange, minTemp, maxTemp, minTempDay, maxTempDay, isNow, currentTemp)}
         ${this.renderText(maxTempDay.toString() + '°', 'center')}
-      </clock-weather-card-forecast-row>
+      </kl-weather-card-forecast-row>
     `
   }
 
@@ -431,7 +431,7 @@ export class ClockWeatherCard extends LitElement {
     }
   }
 
-  private mergeConfig (config: ClockWeatherCardConfig): MergedClockWeatherCardConfig {
+  private mergeConfig (config: klWeatherCardConfig): MergedklWeatherCardConfig {
     return {
       ...config,
       sun_entity: config.sun_entity ?? 'sun.sun',
@@ -445,7 +445,7 @@ export class ClockWeatherCard extends LitElement {
       hide_forecast_section: config.hide_forecast_section ?? false,
       hide_hourly_forecast_section: config.hide_hourly_forecast_section ?? false,
       hide_today_section: config.hide_today_section ?? false,
-      hide_clock: config.hide_clock ?? false,
+      hide_kl: config.hide_kl ?? false,
       hide_date: config.hide_date ?? false,
       date_pattern: config.date_pattern ?? 'D',
       use_browser_time: config.use_browser_time ?? false,
@@ -668,7 +668,7 @@ export class ClockWeatherCard extends LitElement {
     if (withTimeZone.isValid) {
       return withTimeZone
     }
-    console.error(`clock-weather-card - Time Zone [${timeZone}] not supported. Falling back to browser time.`)
+    console.error(`kl-weather-card - Time Zone [${timeZone}] not supported. Falling back to browser time.`)
     return localizedDate
   }
 
@@ -741,13 +741,13 @@ export class ClockWeatherCard extends LitElement {
     if (this.forecastSubscriber) {
       this.forecastSubscriber
         .then((unsub) => { unsub() })
-        .catch(e => { console.error('clock-weather-card - Error when unsubscribing weather forecast: ' + e) })
+        .catch(e => { console.error('kl-weather-card - Error when unsubscribing weather forecast: ' + e) })
     }
 
     if (this.hourlyForecastSubscriber) {
       this.hourlyForecastSubscriber
         .then((unsub) => { unsub() })
-        .catch(e => { console.error('clock-weather-card - Error when unsubscribing weather hourly forecast: ' + e) })
+        .catch(e => { console.error('kl-weather-card - Error when unsubscribing weather hourly forecast: ' + e) })
     }
   }
 
