@@ -4,12 +4,12 @@ import { type DateTime } from 'luxon'
 
 declare global {
   interface HTMLElementTagNameMap {
-    'clock-weather-card-editor': LovelaceCardEditor
+    'weather_card_KL-editor': LovelaceCardEditor
     'hui-error-card': LovelaceCard
   }
 }
 
-export interface ClockWeatherCardConfig extends LovelaceCardConfig {
+export interface KLWeatherCardConfig extends LovelaceCardConfig {
   entity: string
   title?: string
   sun_entity?: string
@@ -30,7 +30,7 @@ export interface ClockWeatherCardConfig extends LovelaceCardConfig {
   time_zone?: string
 }
 
-export interface MergedClockWeatherCardConfig extends LovelaceCardConfig {
+export interface MergedKLWeatherCardConfig extends LovelaceCardConfig {
   entity: string
   title?: string
   sun_entity: string
