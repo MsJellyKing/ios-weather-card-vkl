@@ -7,11 +7,11 @@ export default css`
     height: 100%;
   }
 
-  clock-weather-card-today {
+  kl-weather-card-today {
     display: flex;
   }
 
-  clock-weather-card-today-left {
+  kl-weather-card-today-left {
     display: flex;
     width: 35%;
     align-items: center;
@@ -23,25 +23,25 @@ export default css`
     max-height: 2.7rem;
   }
 
-  clock-weather-card-today-right {
+  kl-weather-card-today-right {
     display: flex;
     width: 65%;
     justify-content: space-around;
     align-items: center;
   }
 
-  clock-weather-card-today-right-wrap {
+  kl-weather-card-today-right-wrap {
     display: flex;
     flex-direction: column;
   }
 
-  clock-weather-card-today-right-wrap-top {
+  kl-weather-card-today-right-wrap-top {
     width: 100%;
     text-align: end;
     display: block;
   }
 
-  clock-weather-card-today-right-wrap-center {
+  kl-weather-card-today-right-wrap-center {
     display: flex;
     height: 4rem;
     font-size: 3.5rem;
@@ -50,22 +50,22 @@ export default css`
     justify-content: center;
   }
 
-  clock-weather-card-today-right-wrap-bottom {
+  kl-weather-card-today-right-wrap-bottom {
     display: flex;
     justify-content: start;
   }
 
-  clock-weather-card-forecast {
+  kl-weather-card-forecast {
     display: block;
   }
 
-  clock-weather-card-hourly-forecast {
+  kl-weather-card-hourly-forecast {
     display: flex;
     flex-direction: row;
     overflow-x: scroll;
   }
 
-  clock-weather-card-hourly-forecast-item {
+  kl-weather-card-hourly-forecast-item {
     display: grid;
     flex-direction: column;
     /* grid-template-columns: var(--col-one-size) 7rem 2.1rem auto 2.1rem; */
@@ -82,7 +82,7 @@ export default css`
     }
   }
 
-  clock-weather-card-forecast-row {
+  kl-weather-card-forecast-row {
     display: grid;
     grid-template-columns: var(--col-one-size) 7rem 2.1rem auto 2.1rem;
     align-items: center;
@@ -90,11 +90,11 @@ export default css`
     border-bottom: 1px solid rgba(255,255,255,.1);
   }
 
-  clock-weather-card-forecast-row:first-child {
+  kl-weather-card-forecast-row:first-child {
     margin-top: -1rem;
   }
 
-  clock-weather-card-forecast-row:last-child {
+  kl-weather-card-forecast-row:last-child {
     border-bottom: none;
     margin-bottom: -1rem;
   }
