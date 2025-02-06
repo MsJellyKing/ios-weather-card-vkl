@@ -18,7 +18,7 @@ jobs:
 
       - name: Build the file
         run: |
-          cd /home/runner/work/clock-weather-card/clock-weather-card
+          cd /home/runner/work/weather_card_KL/weather_card_KL
           yarn install
           yarn version --no-git-tag-version --new-version ${{ steps.slug.outputs.version }}
           yarn build
@@ -28,8 +28,8 @@ jobs:
 
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /home/runner/work/clock-weather-card/clock-weather-card/dist/clock-weather-card.js
-          asset_name: clock-weather-card.js
+          file: /home/runner/work/weather_card_KL/weather_card_KL/dist/weather_card_KL.js
+          asset_name: weather_card_KL.js
           tag: ${{ github.ref }}
           overwrite: true
 
